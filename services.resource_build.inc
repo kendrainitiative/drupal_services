@@ -47,6 +47,8 @@ function _services_build_resources($endpoint_name = '') {
     }
     if (!isset($controller['access callback'])) {
       $controller['access callback'] = 'user_access';
+      $controller['access arguments'] = array('access content');
+      $controller['callback'] = '_services_resource_default_callback';
     }
   }
   drupal_alter('services_resources_controller_post_processing', $controllers, $endpoint);
@@ -107,9 +109,10 @@ function _services_apply_endpoint(&$resources, $endpoint, $strict = TRUE) {
       foreach ($crud as $op) {
         if (isset($resource[$op])) {
           $cop = isset($cres['operations'][$op]) ? $cres['operations'][$op] : array();
-          $resource[$op]['endpoint'] = $cop;
-          if ($strict && (empty($cop) || !$cop['enabled'])) {
+          if ($strict && (empty($cop) || empty($cop['enabled']))) {
             unset($resource[$op]);
+          } else {
+	        $resource[$op]['endpoint'] = $cop;
           }
         }
       }
@@ -119,7 +122,7 @@ function _services_apply_endpoint(&$resources, $endpoint, $strict = TRUE) {
         if (!empty($resource[$class])) {
           foreach ($resource[$class] as $op => $def) {
             $cop = isset($cres[$class][$op]) ? $cres[$class][$op] : array();
-            if (empty($cop) || !$cop['enabled']) {
+            if (empty($cop) || empty($cop['enabled'])) {
               if ($strict) {
                 unset($resource[$class][$op]);
               }

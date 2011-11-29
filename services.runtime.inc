@@ -396,3 +396,12 @@ function _services_access_value($data, $fields) {
   }
   return $data;
 }
+
+/**
+ * Provide a default callback for a resource which doesn't define one
+ *
+ * @return string
+ */
+function _services_resource_default_callback() {
+	return t("No callback has been defined for this controller.");
+}
